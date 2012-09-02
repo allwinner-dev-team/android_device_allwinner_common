@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#ifeq ($(SW_BOARD_USES_CAMERA),true )
+
+
 LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
@@ -37,6 +40,7 @@ LOCAL_C_INCLUDES += \
 	external/jpeg \
 	external/skia/include/core \
 	frameworks/base/core/jni/android/graphics \
+	frameworks/native/include \
 	device/allwinner/common/include \
 	external/cedarx/CedarX/include/include_camera \
 
@@ -58,4 +62,4 @@ LOCAL_MODULE := camera.$(TARGET_BOARD_PLATFORM)
 
 LOCAL_MODULE_TAGS := optional
 include $(BUILD_SHARED_LIBRARY)
-
+#endif
