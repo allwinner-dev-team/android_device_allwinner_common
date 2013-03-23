@@ -26,7 +26,7 @@
 
 /* A helper class that tracks a routine execution.
  * Basically, it dumps an enry message in its constructor, and an exit message
- * in its destructor. Use LOGRE() macro (declared bellow) to create instances
+ * in its destructor. Use ALOGRE() macro (declared bellow) to create instances
  * of this class at the beginning of the tracked routines / methods.
  */
 class HWERoutineTracker {
@@ -34,12 +34,12 @@ public:
     /* Constructor that prints an "entry" trace message. */
     explicit HWERoutineTracker(const char* name)
             : mName(name) {
-        LOGV("Entering %s", mName);
+        ALOGV("Entering %s", mName);
     }
 
     /* Destructor that prints a "leave" trace message. */
     ~HWERoutineTracker() {
-        LOGV("Leaving %s", mName);
+        ALOGV("Leaving %s", mName);
     }
 
 private:
@@ -48,7 +48,7 @@ private:
 };
 
 /* Logs an execution of a routine / method. */
-#define LOGRE() HWERoutineTracker hwertracker_##__LINE__(__FUNCTION__)
+#define ALOGRE() HWERoutineTracker hwertracker_##__LINE__(__FUNCTION__)
 
 /*
  * min / max macros

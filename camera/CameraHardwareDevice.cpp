@@ -32,12 +32,12 @@ CameraHardwareDevice::CameraHardwareDevice(int cameraId, struct hw_module_t* mod
         : CameraHardware(cameraId, module),
           mV4L2CameraDevice(NULL)
 {
-	F_LOG;
+	F_ALOG;
 }
 
 CameraHardwareDevice::~CameraHardwareDevice()
 {
-	F_LOG;
+	F_ALOG;
 	if (mV4L2CameraDevice != NULL)
 	{
 		delete mV4L2CameraDevice;
@@ -51,13 +51,13 @@ CameraHardwareDevice::~CameraHardwareDevice()
 
 status_t CameraHardwareDevice::Initialize()
 {
-	F_LOG;
+	F_ALOG;
 
 	// instance V4L2CameraDevice object
 	mV4L2CameraDevice = new V4L2CameraDevice(this, mCameraID);
 	if (mV4L2CameraDevice == NULL)
 	{
-		LOGE("Failed to create V4L2Camera instance");
+		ALOGE("Failed to create V4L2Camera instance");
 		return NO_MEMORY;
 	}
 	
@@ -89,7 +89,7 @@ status_t CameraHardwareDevice::Initialize()
 
 V4L2CameraDevice* CameraHardwareDevice::getCameraDevice()
 {
-	F_LOG;
+	F_ALOG;
     return mV4L2CameraDevice;
 }
 

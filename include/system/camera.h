@@ -85,7 +85,23 @@ enum {
     // request FRAME and METADATA. Or the apps can request only FRAME or only
     // METADATA.
     CAMERA_MSG_PREVIEW_METADATA = 0x0400, // dataCallback
-    CAMERA_MSG_STATS_DATA       = 0x800, // From CM
+    // Notify on autofocus start and stop. This is useful in continuous
+    // autofocus - FOCUS_MODE_CONTINUOUS_VIDEO and FOCUS_MODE_CONTINUOUS_PICTURE.
+#if defined(QCOM_ICS_COMPAT) && defined(QCOM_HARDWARE)
+    CAMERA_MSG_STATS_DATA       = 0x800,
+    CAMERA_MSG_FOCUS_MOVE = 0x1000,       // notifyCallback
+#elif defined(OMAP_ICS_CAMERA) && defined(OMAP_ENHANCEMENT)
+    CAMERA_MSG_COMPRESSED_BURST_IMAGE = 0x0800, //dataCallback
+    CAMERA_MSG_RAW_BURST = 0x1000,        // dataCallback
+#else
+    CAMERA_MSG_FOCUS_MOVE = 0x0800,       // notifyCallback
+#ifdef QCOM_HARDWARE
+    CAMERA_MSG_STATS_DATA       = 0x1000,
+#elif defined(OMAP_ENHANCEMENT) && defined(OMAP_ENHANCEMENT_BURST_CAPTURE)
+    CAMERA_MSG_COMPRESSED_BURST_IMAGE = 0x1000, // dataCallback
+    CAMERA_MSG_RAW_BURST = 0x2000,        // dataCallback
+#endif
+#endif
     CAMERA_MSG_ALL_MSGS = 0xFFFF
 };
 
@@ -135,7 +151,8 @@ enum {
      * KEY_FOCUS_AREAS and KEY_METERING_AREAS have no effect.
      *
      * arg1 is the face detection type. It can be CAMERA_FACE_DETECTION_HW or
-     * CAMERA_FACE_DETECTION_SW.
+     * CAMERA_FACE_DETECTION_SW. If the type of face detection requested is not
+     * supported, the HAL must return BAD_VALUE.
      */
     CAMERA_CMD_START_FACE_DETECTION = 6,
 
@@ -144,22 +161,60 @@ enum {
      */
     CAMERA_CMD_STOP_FACE_DETECTION = 7,
 
+#if defined(QCOM_ICS_COMPAT) && defined(QCOM_HARDWARE)
+    CAMERA_CMD_HISTOGRAM_ON     = 8,
+    CAMERA_CMD_HISTOGRAM_OFF     = 9,
+    CAMERA_CMD_HISTOGRAM_SEND_DATA  = 10,
+    /* Unused by the older blobs, but referenced */
+    CAMERA_CMD_ENABLE_FOCUS_MOVE_MSG = 11,
+    CAMERA_CMD_PING = 12,
+#else
     /**
-     * From CM
+     * Enable/disable focus move callback (CAMERA_MSG_FOCUS_MOVE). Passing
+     * arg1 = 0 will disable, while passing arg1 = 1 will enable the callback.
      */
-    CAMERA_CMD_HISTOGRAM_ON = 8,
-    CAMERA_CMD_HISTOGRAM_OFF = 9,
-    CAMERA_CMD_HISTOGRAM_SEND_DATA = 10,
+    CAMERA_CMD_ENABLE_FOCUS_MOVE_MSG = 8,
 
     /**
-     * Set screen ID
+     * Ping camera service to see if camera hardware is released.
+     *
+     * When any camera method returns error, the client can use ping command
+     * to see if the camera has been taken away by other clients. If the result
+     * is NO_ERROR, it means the camera hardware is not released. If the result
+     * is not NO_ERROR, the camera has been released and the existing client
+     * can silently finish itself or show a dialog.
+     */
+    CAMERA_CMD_PING = 9,
+ 
+#ifdef QCOM_HARDWARE
+    CAMERA_CMD_HISTOGRAM_ON     = 10,
+    CAMERA_CMD_HISTOGRAM_OFF     = 11,
+    CAMERA_CMD_HISTOGRAM_SEND_DATA  = 12,
+#endif
+#endif
+
+    /**
+     * Set screen ID (Allwinner)
      */
     CAMERA_CMD_SET_SCREEN_ID = 0xFF000000,
+
+    /**
+     * Set CedarX recorder (Allwinner)
+     */
+    CAMERA_CMD_SET_CEDARX_RECORDER = 0xFF000001,
 };
 
 /** camera fatal errors */
 enum {
     CAMERA_ERROR_UNKNOWN = 1,
+    /**
+     * Camera was released because another client has connected to the camera.
+     * The original client should call Camera::disconnect immediately after
+     * getting this notification. Otherwise, the camera will be released by
+     * camera service in a short time. The client should not call any method
+     * (except disconnect and sending CAMERA_CMD_PING) after getting this.
+     */
+    CAMERA_ERROR_RELEASED = 2,
     CAMERA_ERROR_SERVER_DIED = 100
 };
 
@@ -170,13 +225,14 @@ enum {
     CAMERA_FACING_FRONT = 1
 };
 
-/** From CM */
+#ifdef QCOM_HARDWARE
 enum {
     CAMERA_SUPPORT_MODE_2D = 0x01, /* Camera Sensor supports 2D mode. */
     CAMERA_SUPPORT_MODE_3D = 0x02, /* Camera Sensor supports 3D mode. */
     CAMERA_SUPPORT_MODE_NONZSL = 0x04, /* Camera Sensor in NON-ZSL mode. */
     CAMERA_SUPPORT_MODE_ZSL = 0x08 /* Camera Sensor supports ZSL mode. */
 };
+#endif
 
 enum {
     /** Hardware face detection. It does not use much CPU. */

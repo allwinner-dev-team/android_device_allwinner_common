@@ -1,4 +1,4 @@
-# Copyright (C) 2011 The Android Open Source Project
+# Copyright (C) 2012 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,23 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 LOCAL_PATH := $(call my-dir)
 
+# HAL module implemenation stored in
+# hw/<POWERS_HARDWARE_MODULE_ID>.<ro.hardware>.so
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := audio.primary.$(TARGET_BOARD_PLATFORM)
 LOCAL_MODULE_PATH := $(TARGET_OUT_SHARED_LIBRARIES)/hw
-LOCAL_SRC_FILES := audio_hw.c ril_interface.c
-LOCAL_C_INCLUDES += \
-	external/tinyalsa/include \
-	system/media/audio_utils/include \
-	system/media/audio_effects/include
-LOCAL_SHARED_LIBRARIES := liblog libcutils libtinyalsa libaudioutils libdl
+LOCAL_SHARED_LIBRARIES := liblog libcutils
+LOCAL_SRC_FILES := power_sun4i.c
+LOCAL_MODULE := power.sun4i
 LOCAL_MODULE_TAGS := optional
-
-ifeq ($(SW_BOARD_AUDIO_DEFAULT_HDMI),true)
-LOCAL_CFLAGS += -DDEFAULT_AUDIO_HDMI
-endif
-
 include $(BUILD_SHARED_LIBRARY)
-
