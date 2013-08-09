@@ -1,5 +1,5 @@
-import init.sun4i.usb.rc
-import init.sun4i.modules.rc
+import init.sunxi.usb.rc
+import init.${ro.hardware}.modules.rc
 
 on early-init
 
