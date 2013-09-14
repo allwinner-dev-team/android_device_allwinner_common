@@ -41,6 +41,10 @@ BOARD_SYSTEMIMAGE_PARTITION_SIZE := 268435456
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 1073741824
 BOARD_FLASH_BLOCK_SIZE := 4096
 
+# The nand usually has 9+ partitions. vold only allows 4 by default, so we
+# have to raise this so that it can mount nandi.
+BOARD_VOLD_MAX_PARTITIONS := 16
+
 #EGL stuff
 BOARD_EGL_CFG := device/allwinner/common/egl.cfg
 USE_OPENGL_RENDERER := true
